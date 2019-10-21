@@ -8,7 +8,7 @@ namespace ZombiesBreakDoors {
     class BreakDoorHandler : IEventHandlerDoorAccess {
         private readonly ZBDPlugin plugin;
 
-        /* This constructor adds a reference to the plugin to this EventHandler. */
+        // This constructor adds a reference to the plugin to this EventHandler.
         public BreakDoorHandler(ZBDPlugin plugin) {
             this.plugin = plugin;
         }
