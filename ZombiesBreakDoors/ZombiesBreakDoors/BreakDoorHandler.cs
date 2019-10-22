@@ -28,6 +28,7 @@ namespace ZombiesBreakDoors {
             int threshold = plugin.GetConfigInt("zbd_zombies_threshold");
 
             List<Player> zombies = plugin.Server.GetPlayers(Role.SCP_049_2);
+            List<Player> nearbyZombies;
 
             if(ev.Player.TeamRole.Role.Equals(Role.SCP_049_2)) 
             {
@@ -36,14 +37,34 @@ namespace ZombiesBreakDoors {
                 // Only allow to destroy doors which normally can't be opened. Also check if there are even enough zombies in the round.
                 if ((!ev.Allow && canBeBrokenDown(door)) && zombies.Count >= threshold)
                 {
-                    if (getZombiesNearby(door, zombies) >= threshold) 
+                    nearbyZombies = getZombiesNearby(door, zombies);
+
+                    if (nearbyZombies.Count >= threshold) 
                     {
+                        float delay = plugin.GetConfigFloat("zbd_delay");
+
                         // Marking the door for destruction
                         markedDoorsPos.Add(door.Position.GetHashCode());
 
-                        Timing.RunCoroutine(_destroyDoorDelay(door, plugin.GetConfigFloat("zbd_delay")));
+                        // Display the countdown for each player
+                        foreach(Player zombie in nearbyZombies) {
+                            Timing.RunCoroutine(_displayCountdown(zombie, delay));
+                        }
+                        
+                        Timing.RunCoroutine(_destroyDoorDelay(door, delay));
                     }
                 }
+            }
+        }
+
+        private IEnumerator<float> _displayCountdown(Player player, float seconds) {
+            string message;
+
+            for(int i = (int) seconds; i >= 0; i--) {
+                message = "Breaking door in " + i + " seconds";
+                plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "1", message });
+
+                yield return Timing.WaitForSeconds(1.0f);
             }
         }
 
@@ -71,9 +92,9 @@ namespace ZombiesBreakDoors {
         }
 
         // Counts the amount of zombies within range of the door.
-        private int getZombiesNearby(Smod2.API.Door door, List<Player> zombies) {
+        private List<Player> getZombiesNearby(Smod2.API.Door door, List<Player> zombies) {
+            List<Player> nearbyZombies = new List<Player>();
             Vector doorPos = door.Position;
-            int zombieCount = 0;
             
             foreach(Player zombie in zombies) 
             {
@@ -81,11 +102,11 @@ namespace ZombiesBreakDoors {
 
                 if(Vector.Distance(zombiePos, doorPos) <= plugin.GetConfigFloat("zbd_zombies_range")) 
                 {
-                    zombieCount++;
+                    nearbyZombies.Add(zombie);
                 }
             }
 
-            return zombieCount;
+            return nearbyZombies;
         }
     }
 }
