@@ -10,5 +10,5 @@ This plugin isn't very complicated, but it:
 To install, simply place the ```ZombiesBreakDoors.dll``` in the ```sm_plugins``` folder of your server. It requires Smod2 to function.
 
 ## Planned features
-- Introduce a delay between a door access and the door breaking. *** ADDED! ***
+- Introduce a delay between a door access and the door breaking. ***ADDED!***
 - Choose which doors have this functionality.
