@@ -11,4 +11,9 @@ To install, simply place the ```ZombiesBreakDoors.dll``` in the ```sm_plugins```
 
 ## Planned features
 - Introduce a delay between a door access and the door breaking. ***ADDED!***
-- Choose which doors have this functionality.
+- Choose which doors can be broken down.
+
+## Potential features?
+- Change amount of zombies needed per door. (Different health modes for doors?)
+- Change delay based on amount of zombies near door.
+- Instead of breaking them, just open doors that normally can't be broken. (Surface nuke room for example)
