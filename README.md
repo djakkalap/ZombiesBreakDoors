@@ -22,6 +22,10 @@ To choose which doors should be allowed to open, you have to pick from these nam
 - HCZ_ARMORY
 - LCZ_ARMORY
 - NUKE_ARMORY
+- HID
+- HID_LEFT
+- HID_RIGHT
+- INTERCOM
 
 ### Non-destroyable normal doors
 - 012_BOTTOM
