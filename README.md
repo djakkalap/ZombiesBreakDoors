@@ -9,11 +9,5 @@ This plugin isn't very complicated, but it:
 ## Installation
 To install, simply place the ```ZombiesBreakDoors.dll``` in the ```sm_plugins``` folder of your server. It requires Smod2 to function.
 
-## Planned features
-- Introduce a delay between a door access and the door breaking. ***ADDED!***
-- Choose which doors can be broken down.
-
-## Potential features?
-- Change amount of zombies needed per door. (Different health modes for doors?)
-- Change delay based on amount of zombies near door.
-- Instead of breaking them, just open doors that normally can't be broken. (Surface nuke room for example)
+## Please give me ideas
+I am not very good at coming up with ideas myself, if you have any interesting ideas please contact me.
