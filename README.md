@@ -1,4 +1,4 @@
-# ZombiesBreakDoors
+# Zombies Break Doors
 This is a simple plugin for the game SCP: Secret Laboratory. It allows SCP-049-2 instances to gather and break down a door together.
 
 ## Features
