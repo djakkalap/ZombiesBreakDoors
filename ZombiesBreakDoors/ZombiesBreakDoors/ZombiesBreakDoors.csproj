@@ -54,6 +54,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BreakDoorHandler.cs" />
+    <Compile Include="ZBDDisableCommand.cs" />
     <Compile Include="ZBDPlugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
