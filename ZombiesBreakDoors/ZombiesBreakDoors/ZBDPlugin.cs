@@ -39,6 +39,7 @@ namespace ZombiesBreakDoors {
             this.AddCommand("zbddisable", new ZBDDisableCommand(this));
 
             this.AddEventHandler(typeof(IEventHandlerDoorAccess), new BreakDoorHandler(this));
+            this.AddEventHandler(typeof(IEventHandlerWaitingForPlayers), new MiscEventHandler(this));
         }
     }
 }

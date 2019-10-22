@@ -56,7 +56,7 @@ namespace ZombiesBreakDoors {
             {
                 Vector zombiePos = zombie.GetPosition();
 
-                if(Vector.Distance(zombiePos, doorPos) < plugin.GetConfigFloat("zbd_zombies_range")) 
+                if(Vector.Distance(zombiePos, doorPos) <= plugin.GetConfigFloat("zbd_zombies_range")) 
                 {
                     zombieCount++;
                 }
