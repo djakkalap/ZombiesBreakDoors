@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("ZombiesBreakDoors")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Plugin for SCP:SL")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("ZombiesBreakDoors")]

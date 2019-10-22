@@ -2,7 +2,6 @@
 using Smod2.Attributes;
 using Smod2.Config;
 using Smod2.EventHandlers;
-using Smod2.Events;
 
 namespace ZombiesBreakDoors {
     [PluginDetails(
@@ -34,8 +33,9 @@ namespace ZombiesBreakDoors {
             this.AddConfig(new ConfigSetting("zbd_zombies_threshold", 3, true, "This number determines how many zombies need to be near a door for it to break."));
             this.AddConfig(new ConfigSetting("zbd_zombies_range", 2.5f, true, "This number determines how far the zombies need to be in range for them to be considered 'near the door'."));
             this.AddConfig(new ConfigSetting("zbd_breakopendoors", false, true, "This boolean determines whether or not to break open doors."));
+            this.AddConfig(new ConfigSetting("zbd_delay", 2.0f, true, "This number determines how many seconds it takes for a door to break."));
 
-            this.AddEventHandler(typeof(IEventHandlerDoorAccess), new BreakDoorHandler(this), Priority.High);
+            this.AddEventHandler(typeof(IEventHandlerDoorAccess), new BreakDoorHandler(this));
         }
     }
 }
