@@ -10,6 +10,7 @@ namespace ZombiesBreakDoors {
             return "Disables the ZombiesBreakDoors plugin.";
         }
 
+        // Returns how to use the command.
         public string GetUsage() {
             return "ZBDDISABLE";
         }

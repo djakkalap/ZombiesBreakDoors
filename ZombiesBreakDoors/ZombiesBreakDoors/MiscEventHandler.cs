@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-using Smod2.EventHandlers;
+﻿using Smod2.EventHandlers;
 using Smod2.Events;
 
 namespace ZombiesBreakDoors {

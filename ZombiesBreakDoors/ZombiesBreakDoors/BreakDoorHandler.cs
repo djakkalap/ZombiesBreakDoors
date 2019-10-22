@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 
 using Smod2.API;
@@ -18,14 +19,13 @@ namespace ZombiesBreakDoors {
         // When a door is accessed by a zombie, we check if there are enough zombies near the door. If yes, we break it.
         public void OnDoorAccess(PlayerDoorAccessEvent ev) {
             int threshold = plugin.GetConfigInt("zbd_zombies_threshold");
-            bool breakIfOpen = plugin.GetConfigBool("zbd_breakopendoors");
 
             List<Player> zombies = plugin.Server.GetPlayers(Role.SCP_049_2);
 
             if(ev.Player.TeamRole.Role.Equals(Role.SCP_049_2)) 
             {
-                // Only allow closed doors, also allow open doors if the config option 'zbd_breakopendoors' is true.
-                if(!ev.Allow && ((ev.Door.Open && breakIfOpen) || !ev.Door.Open)) 
+                // Only allow to destroy doors which normally can't be opened.
+                if(!ev.Allow && canBeDestroyed(ev.Door)) 
                 {
                     if (zombies.Count >= threshold) 
                     {
@@ -47,10 +47,24 @@ namespace ZombiesBreakDoors {
             destroyDoor(door);
         }
 
+        // This method checks if the door is allowed to be destroyed.
+        private bool canBeDestroyed(Smod2.API.Door door) {
+            bool breakIfOpen = plugin.GetConfigBool("zbd_breakopendoors");
+            string[] disallowedDoors = plugin.GetConfigList("zbd_doors_disallow");
+
+            if ((door.Open && breakIfOpen) || !door.Open) {
+                if(!disallowedDoors.Contains(door.Name)) {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         // Counts the amount of zombies within range of the door.
         private int getZombiesNearby(Smod2.API.Door door, List<Player> zombies) {
-            int zombieCount = 0;
             Vector doorPos = door.Position;
+            int zombieCount = 0;
             
             foreach(Player zombie in zombies) 
             {

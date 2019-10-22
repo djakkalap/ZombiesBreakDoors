@@ -1,4 +1,6 @@
-﻿using Smod2;
+﻿using System.Collections.Generic;
+
+using Smod2;
 using Smod2.Attributes;
 using Smod2.Config;
 using Smod2.EventHandlers;
@@ -35,6 +37,7 @@ namespace ZombiesBreakDoors {
             this.AddConfig(new ConfigSetting("zbd_breakopendoors", false, true, "This boolean determines whether or not to break open doors."));
             this.AddConfig(new ConfigSetting("zbd_delay", 2.0f, true, "This number determines how many seconds it takes for a door to break."));
             this.AddConfig(new ConfigSetting("zbd_disable", false, true, "This boolean decides whether to load the plugin."));
+            this.AddConfig(new ConfigSetting("zbd_doors_disallow", new string[] { }, true, "This array contains the rooms which should not be allowed to be broken."));
 
             this.AddCommand("zbddisable", new ZBDDisableCommand(this));
 
