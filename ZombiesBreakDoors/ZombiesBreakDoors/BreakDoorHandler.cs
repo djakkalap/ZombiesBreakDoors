@@ -11,9 +11,16 @@ namespace ZombiesBreakDoors {
     class BreakDoorHandler : IEventHandlerDoorAccess {
         private readonly ZBDPlugin plugin;
 
+        // This hash set contains the doors that are already marked for destruction and don't need to be checked anymore.
+        // USING THE HASH OF DOOR POSITIONS BECAUSE THAT WAS THE ONLY PROPERTY OF THE DOORS THAT WAS CONSTANT.
+        private HashSet<int> markedDoorsPos;
+
+
         // This constructor adds a reference to the plugin to this EventHandler.
         public BreakDoorHandler(ZBDPlugin plugin) {
             this.plugin = plugin;
+
+            markedDoorsPos = new HashSet<int>();
         }
 
         // When a door is accessed by a zombie, we check if there are enough zombies near the door. If yes, we break it.
@@ -24,17 +31,19 @@ namespace ZombiesBreakDoors {
 
             if(ev.Player.TeamRole.Role.Equals(Role.SCP_049_2)) 
             {
-                // Only allow to destroy doors which normally can't be opened.
-                if(!ev.Allow && canBeDestroyed(ev.Door)) 
+                Smod2.API.Door door = ev.Door;
+
+                // Only allow to destroy doors which normally can't be opened. Also check if there are even enough zombies in the round.
+                if ((!ev.Allow && canBeBrokenDown(door)) && zombies.Count >= threshold)
                 {
-                    if (zombies.Count >= threshold) 
+                    if (getZombiesNearby(door, zombies) >= threshold) 
                     {
-                        if (getZombiesNearby(ev.Door, zombies) >= threshold) 
-                        {
-                            Timing.RunCoroutine(_destroyDoorDelay(ev.Door, plugin.GetConfigFloat("zbd_delay")));
-                        }
+                        // Marking the door for destruction
+                        markedDoorsPos.Add(door.Position.GetHashCode());
+
+                        Timing.RunCoroutine(_destroyDoorDelay(door, plugin.GetConfigFloat("zbd_delay")));
                     }
-                }            
+                }
             }
         }
 
@@ -48,12 +57,12 @@ namespace ZombiesBreakDoors {
         }
 
         // This method checks if the door is allowed to be destroyed.
-        private bool canBeDestroyed(Smod2.API.Door door) {
+        private bool canBeBrokenDown(Smod2.API.Door door) {
             bool breakIfOpen = plugin.GetConfigBool("zbd_breakopendoors");
             string[] disallowedDoors = plugin.GetConfigList("zbd_doors_disallow");
 
             if ((door.Open && breakIfOpen) || !door.Open) {
-                if(!disallowedDoors.Contains(door.Name)) {
+                if (!disallowedDoors.Contains(door.Name) && !markedDoorsPos.Contains(door.Position.GetHashCode())) {
                     return true;
                 }
             }

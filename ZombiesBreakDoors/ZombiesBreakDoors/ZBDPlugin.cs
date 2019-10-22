@@ -38,6 +38,7 @@ namespace ZombiesBreakDoors {
             this.AddConfig(new ConfigSetting("zbd_delay", 2.0f, true, "This number determines how many seconds it takes for a door to break."));
             this.AddConfig(new ConfigSetting("zbd_disable", false, true, "This boolean decides whether to load the plugin."));
             this.AddConfig(new ConfigSetting("zbd_doors_disallow", new string[] { }, true, "This array contains the rooms which should not be allowed to be broken."));
+            this.AddConfig(new ConfigSetting("zbd_broadcast_countdown", true, true, "This boolean determines whether to show a countdown for when the door breaks on the players' screens."));
 
             this.AddCommand("zbddisable", new ZBDDisableCommand(this));
 
