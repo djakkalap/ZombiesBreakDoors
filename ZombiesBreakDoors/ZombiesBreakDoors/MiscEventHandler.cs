@@ -8,8 +8,7 @@ namespace ZombiesBreakDoors {
         public MiscEventHandler(ZBDPlugin plugin) => this.plugin = plugin;
         
         public void OnWaitingForPlayers(WaitingForPlayersEvent ev) {
-            if (plugin.GetConfigBool("zbd_disable"))
-                plugin.PluginManager.DisablePlugin(plugin);
+            if (plugin.GetConfigBool("zbd_disable")) plugin.PluginManager.DisablePlugin(plugin);
         }
     }
 }

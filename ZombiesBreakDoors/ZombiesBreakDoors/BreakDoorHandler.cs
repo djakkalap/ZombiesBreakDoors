@@ -41,8 +41,7 @@ namespace ZombiesBreakDoors {
                 Smod2.API.Door door = ev.Door;
 
                 // Only allow to destroy doors which normally can't be opened. Also check if there are even enough zombies in the round.
-                // if ((!ev.Allow && canBeBrokenDown(door)) && zombies.Count >= threshold)
-                if (!ev.Allow && canBeBrokenDown(door)) 
+                if ((!ev.Allow && canBeBrokenDown(door)) && zombies.Count >= threshold)
                 {
                     nearbyZombies = getZombiesNearby(door, zombies);
                     nearbyZombiesCount = nearbyZombies.Count;
@@ -57,8 +56,10 @@ namespace ZombiesBreakDoors {
                         if (plugin.GetConfigBool("zbd_broadcast_countdown")) 
                         {
                             // Display the countdown for each player
-                            foreach (Player zombie in nearbyZombies) {
-                                if (!playersGettingBC.Contains(zombie.SteamId)) {
+                            foreach (Player zombie in nearbyZombies) 
+                            {
+                                if (!playersGettingBC.Contains(zombie.SteamId)) 
+                                {
                                     Timing.RunCoroutine(_displayCountdown(zombie, delay));
                                 }
                             }
@@ -69,8 +70,9 @@ namespace ZombiesBreakDoors {
                     {
                         int amountNeeded = threshold - nearbyZombiesCount;
 
-                        foreach(Player zombie in nearbyZombies) {
-                            if (!playersGettingBC.Contains(zombie.SteamId)) {
+                        foreach (Player zombie in nearbyZombies) {
+                            if (!playersGettingBC.Contains(zombie.SteamId)) 
+                            {
                                 Timing.RunCoroutine(_displayZombiesNeeded(zombie, amountNeeded));
                             }
                         }
@@ -85,8 +87,9 @@ namespace ZombiesBreakDoors {
 
             playersGettingBC.Add(player.SteamId);
 
-            for (int i = (int) seconds; i >= 0; i--) {
-                message = "Breaking door in " + i + " seconds";
+            for (int i = (int) seconds; i >= 0; i--) 
+            {
+                message = "Breaking door in " + i;
 
                 plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "1", message });
 
@@ -122,8 +125,10 @@ namespace ZombiesBreakDoors {
             bool breakIfOpen = plugin.GetConfigBool("zbd_breakopendoors");
             string[] disallowedDoors = plugin.GetConfigList("zbd_doors_disallow");
 
-            if ((door.Open && breakIfOpen) || !door.Open) {
-                if (!disallowedDoors.Contains(door.Name) && !markedDoorsPos.Contains(door.Position.GetHashCode())) {
+            if ((door.Open && breakIfOpen) || !door.Open) 
+            {
+                if (!disallowedDoors.Contains(door.Name) && !markedDoorsPos.Contains(door.Position.GetHashCode())) 
+                {
                     return true;
                 }
             }
@@ -136,7 +141,7 @@ namespace ZombiesBreakDoors {
             List<Player> nearbyZombies = new List<Player>();
             Vector doorPos = door.Position;
             
-            foreach(Player zombie in zombies) 
+            foreach (Player zombie in zombies) 
             {
                 Vector zombiePos = zombie.GetPosition();
 
