@@ -19,7 +19,7 @@ namespace ZombiesBreakDoors {
             plugin.Info("Disabling " + plugin.Details.name + "...");
             plugin.PluginManager.DisablePlugin(plugin);
 
-            return new string[] {GetUsage() + " called."};
+            return new string[] {GetUsage() + " called, disabling ZombiesBreakDoors"};
         }
     }
 }

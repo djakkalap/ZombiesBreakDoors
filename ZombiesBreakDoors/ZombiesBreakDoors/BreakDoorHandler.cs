@@ -54,15 +54,19 @@ namespace ZombiesBreakDoors {
                         // Marking the door for destruction
                         markedDoorsPos.Add(door.Position.GetHashCode());
 
-                        // Display the countdown for each player
-                        foreach(Player zombie in nearbyZombies) {
-                            if (!playersGettingBC.Contains(zombie.SteamId)) {
-                                Timing.RunCoroutine(_displayCountdown(zombie, delay));
+                        if (plugin.GetConfigBool("zbd_broadcast_countdown")) 
+                        {
+                            // Display the countdown for each player
+                            foreach (Player zombie in nearbyZombies) {
+                                if (!playersGettingBC.Contains(zombie.SteamId)) {
+                                    Timing.RunCoroutine(_displayCountdown(zombie, delay));
+                                }
                             }
                         }
                         
                         Timing.RunCoroutine(_destroyDoorDelay(door, delay));
-                    } else {
+                    } else if (plugin.GetConfigBool("zbd_broadcast_zombiesneeded")) 
+                    {
                         int amountNeeded = threshold - nearbyZombiesCount;
 
                         foreach(Player zombie in nearbyZombies) {
