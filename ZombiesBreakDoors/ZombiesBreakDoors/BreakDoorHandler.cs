@@ -17,7 +17,7 @@ namespace ZombiesBreakDoors {
 
         // This set contains the players who are currently receiving a pbc from this plugin, this is used to prevent broadcasts from stacking.
         // It uses their SteamIds for this.
-        private HashSet<string> playersGettingBC;
+        private HashSet<string> gettingZombiesNeededBC;
 
 
         // This constructor adds a reference to the plugin to this EventHandler.
@@ -25,7 +25,7 @@ namespace ZombiesBreakDoors {
             this.plugin = plugin;
 
             markedDoorsPos = new HashSet<int>();
-            playersGettingBC = new HashSet<string>();
+            gettingZombiesNeededBC = new HashSet<string>();
         }
 
         // When a door is accessed by a zombie, we check if there are enough zombies near the door. If yes, we break it.
@@ -41,7 +41,7 @@ namespace ZombiesBreakDoors {
                 Smod2.API.Door door = ev.Door;
 
                 // Only allow to destroy doors which normally can't be opened. Also check if there are even enough zombies in the round.
-                if ((!ev.Allow && canBeBrokenDown(door)) && zombies.Count >= threshold)
+                if (!ev.Allow && (canBeBrokenDown(door)) && !isMarked(door))
                 {
                     nearbyZombies = getZombiesNearby(door, zombies);
                     nearbyZombiesCount = nearbyZombies.Count;
@@ -58,10 +58,7 @@ namespace ZombiesBreakDoors {
                             // Display the countdown for each player
                             foreach (Player zombie in nearbyZombies) 
                             {
-                                if (!playersGettingBC.Contains(zombie.SteamId)) 
-                                {
-                                    Timing.RunCoroutine(_displayCountdown(zombie, delay));
-                                }
+                                Timing.RunCoroutine(_displayCountdown(zombie, delay));
                             }
                         }
                         
@@ -70,8 +67,10 @@ namespace ZombiesBreakDoors {
                     {
                         int amountNeeded = threshold - nearbyZombiesCount;
 
-                        foreach (Player zombie in nearbyZombies) {
-                            if (!playersGettingBC.Contains(zombie.SteamId)) 
+                        // Display zombies needed broadcast, don't do it for players already receiving this broadcast.
+                        foreach (Player zombie in nearbyZombies) 
+                        {
+                            if (!gettingZombiesNeededBC.Contains(zombie.SteamId)) 
                             {
                                 Timing.RunCoroutine(_displayZombiesNeeded(zombie, amountNeeded));
                             }
@@ -81,11 +80,14 @@ namespace ZombiesBreakDoors {
             }
         }
 
-        // Displays a broadcast (personal) using the PBC command. It shows a countdown for how long it takes to break the door.
+        // Displays a broadcast (personal) using the PBC command. It shows a message that the door is being broken.
         private IEnumerator<float> _displayCountdown(Player player, float seconds) {
             string message;
 
-            playersGettingBC.Add(player.SteamId);
+            if (gettingZombiesNeededBC.Contains(player.SteamId))
+            {
+                player.PersonalClearBroadcasts();
+            }
 
             for (int i = (int) seconds; i >= 0; i--) 
             {
@@ -95,8 +97,6 @@ namespace ZombiesBreakDoors {
 
                 yield return Timing.WaitForSeconds(1.0f);
             }
-
-            playersGettingBC.Remove(player.SteamId);
         }
 
         // Destroys a door with a set delay.
@@ -112,12 +112,12 @@ namespace ZombiesBreakDoors {
         private IEnumerator<float> _displayZombiesNeeded(Player player, int amountNeeded) {
             string message = "You need " + amountNeeded + " more zombies to break this door";
 
-            playersGettingBC.Add(player.SteamId);
-            plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "2", message });
+            gettingZombiesNeededBC.Add(player.SteamId);
+            plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "1", message });
 
-            yield return Timing.WaitForSeconds(2.0f);
+            yield return Timing.WaitForSeconds(1.0f);
 
-            playersGettingBC.Remove(player.SteamId);
+            gettingZombiesNeededBC.Remove(player.SteamId);
         }
 
         // This method checks if the door is allowed to be destroyed.
@@ -127,13 +127,18 @@ namespace ZombiesBreakDoors {
 
             if ((door.Open && breakIfOpen) || !door.Open) 
             {
-                if (!disallowedDoors.Contains(door.Name) && !markedDoorsPos.Contains(door.Position.GetHashCode())) 
+                if (!disallowedDoors.Contains(door.Name))
                 {
                     return true;
                 }
             }
 
             return false;
+        }
+
+        // Checks if a door will be destroyed
+        private bool isMarked(Smod2.API.Door door) {
+            return markedDoorsPos.Contains(door.Position.GetHashCode());
         }
 
         // Counts the amount of zombies within range of the door.
