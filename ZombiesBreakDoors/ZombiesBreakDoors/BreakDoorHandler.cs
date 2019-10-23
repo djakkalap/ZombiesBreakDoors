@@ -18,6 +18,7 @@ namespace ZombiesBreakDoors {
         // This set contains the players who are currently receiving a pbc from this plugin, this is used to prevent broadcasts from stacking.
         // It uses their SteamIds for this.
         private HashSet<string> gettingZombiesNeededBC;
+        private HashSet<string> gettingCannotOpenBC;
 
 
         // This constructor adds a reference to the plugin to this EventHandler.
@@ -26,6 +27,7 @@ namespace ZombiesBreakDoors {
 
             markedDoorsPos = new HashSet<int>();
             gettingZombiesNeededBC = new HashSet<string>();
+            gettingCannotOpenBC = new HashSet<string>();
         }
 
         // When a door is accessed by a zombie, we check if there are enough zombies near the door. If yes, we break it.
@@ -40,8 +42,14 @@ namespace ZombiesBreakDoors {
             {
                 Smod2.API.Door door = ev.Door;
 
-                // Only allow to destroy doors which normally can't be opened. Also check if there are even enough zombies in the round.
-                if (!ev.Allow && (canBeBrokenDown(door)) && !isMarked(door))
+                // Only allow to destroy doors which normally can't be opened.
+                if (isDisallowed(door) && plugin.GetConfigBool("zbd_broadcast_cannotopen"))
+                {
+                    if (!gettingCannotOpenBC.Contains(ev.Player.SteamId))
+                    {
+                        Timing.RunCoroutine(_displayCantBreak(ev.Player));
+                    }
+                } else if (!ev.Allow && !isMarked(door) && canBeBrokenDown(door))
                 {
                     nearbyZombies = getZombiesNearby(door, zombies);
                     nearbyZombiesCount = nearbyZombies.Count;
@@ -91,7 +99,7 @@ namespace ZombiesBreakDoors {
 
             for (int i = (int) seconds; i >= 0; i--) 
             {
-                message = "Breaking door in " + i;
+                message = "<color=green>Breaking door in " + i + "</color>";
 
                 plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "1", message });
 
@@ -110,7 +118,7 @@ namespace ZombiesBreakDoors {
 
         // Displays how many zombies extra are needed near the door for it to break.
         private IEnumerator<float> _displayZombiesNeeded(Player player, int amountNeeded) {
-            string message = "You need " + amountNeeded + " more zombies to break this door";
+            string message = "<color=cyan>You need " + amountNeeded + " more zombie(s) to break this door</color>";
 
             gettingZombiesNeededBC.Add(player.SteamId);
             plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "1", message });
@@ -120,14 +128,30 @@ namespace ZombiesBreakDoors {
             gettingZombiesNeededBC.Remove(player.SteamId);
         }
 
+        // Displays that this door can't be broken.
+        private IEnumerator<float> _displayCantBreak(Player player) {
+            string message = "<color=red>This door cannot be broken</color>";
+
+            if (gettingCannotOpenBC.Contains(player.SteamId))
+            {
+                player.PersonalClearBroadcasts();
+            }
+
+            gettingCannotOpenBC.Add(player.SteamId);
+            plugin.CommandManager.CallCommand(new Smod2.Commands.ICommandSender(), "pbc", new string[] { player.Name, "1", message });
+
+            yield return Timing.WaitForSeconds(1.0f);
+
+            gettingCannotOpenBC.Remove(player.SteamId);
+        }
+
         // This method checks if the door is allowed to be destroyed.
         private bool canBeBrokenDown(Smod2.API.Door door) {
             bool breakIfOpen = plugin.GetConfigBool("zbd_breakopendoors");
-            string[] disallowedDoors = plugin.GetConfigList("zbd_doors_disallow");
 
             if ((door.Open && breakIfOpen) || !door.Open) 
             {
-                if (!disallowedDoors.Contains(door.Name))
+                if (!isDisallowed(door))
                 {
                     return true;
                 }
@@ -139,6 +163,13 @@ namespace ZombiesBreakDoors {
         // Checks if a door will be destroyed
         private bool isMarked(Smod2.API.Door door) {
             return markedDoorsPos.Contains(door.Position.GetHashCode());
+        }
+
+        // Checks if a door is in the disallowed list.
+        private bool isDisallowed(Smod2.API.Door door) {
+            string[] disallowedDoors = plugin.GetConfigList("zbd_doors_disallow");
+
+            return disallowedDoors.Contains(door.Name);
         }
 
         // Counts the amount of zombies within range of the door.

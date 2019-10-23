@@ -38,6 +38,7 @@ namespace ZombiesBreakDoors {
             AddConfig(new ConfigSetting("zbd_doors_disallow", new string[] { }, true, "This array contains the rooms which should not be allowed to be broken."));
             AddConfig(new ConfigSetting("zbd_broadcast_countdown", true, true, "This boolean determines whether to show a countdown for when the door breaks on the players' screens."));
             AddConfig(new ConfigSetting("zbd_broadcast_zombiesneeded", true, true, "This boolean determines whether to show how many zombies extra are needed near the door."));
+            AddConfig(new ConfigSetting("zbd_broadcast_cannotopen", true, true, "This boolean determines whether to show if a door cannot be broken."));
 
             AddCommand("zbddisable", new ZBDDisableCommand(this));
 
