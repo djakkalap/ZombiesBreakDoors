@@ -15,6 +15,8 @@ namespace ZombiesBreakDoors {
         // USING THE HASH OF DOOR POSITIONS BECAUSE THAT WAS THE ONLY PROPERTY OF THE DOORS THAT WAS CONSTANT.
         private HashSet<int> markedDoorsPos;
 
+        private readonly string[] GATE_NAMES = { "GATE_A", "GATE_B", "914", "SURFACE_GATE", "372", "173", "079_FIRST", "079_SECOND" };
+
         // This set contains the players who are currently receiving a pbc from this plugin, this is used to prevent broadcasts from stacking.
         // It uses their SteamIds for this.
         private HashSet<string> gettingZombiesNeededBC;
@@ -41,6 +43,12 @@ namespace ZombiesBreakDoors {
             if (ev.Player.TeamRole.Role.Equals(Role.SCP_049_2)) 
             {
                 Smod2.API.Door door = ev.Door;
+
+                // Don't check gates, because you can't open those anyways.
+                if (GATE_NAMES.Contains(door.Name))
+                {
+                    return;
+                }
 
                 // Only allow to destroy doors which normally can't be opened.
                 if (isDisallowed(door) && plugin.GetConfigBool("zbd_broadcast_cannotopen"))
