@@ -40,7 +40,7 @@ namespace ZombiesBreakDoors {
             List<Player> nearbyZombies;
             int nearbyZombiesCount;
 
-            if (ev.Player.TeamRole.Role.Equals(Role.SCP_049_2)) 
+            if (ev.Player.TeamRole.Role == Smod2.API.RoleType.SCP_049_2) 
             {
                 Smod2.API.Door door = ev.Door;
 
